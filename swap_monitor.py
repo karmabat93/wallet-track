@@ -44,24 +44,20 @@ def format_tx(tx):
         "from": tx["from"],
         "to": tx["to"],
         "timestamp": datetime.utcfromtimestamp(int(tx["timeStamp"])).strftime("%Y-%m-%d %H:%M:%S"),
-        "method": tx["functionName"] or "Swap",
+        "method": tx.get("functionName", "Swap"),
         "gas": int(tx["gasUsed"]),
         "block": tx["blockNumber"]
     }
 
 def notify_discord(tx, address):
-    content = f"🔁 **Swap détecté**
-
-"
-    content += f"📤 From: `{tx['from']}`
-"
-    content += f"📥 To: `{tx['to']}`
-"
-    content += f"🕒 Time: `{tx['timestamp']}`
-"
-    content += f"⛽ Gas used: `{tx['gas']}`
-"
-    content += f"[🔗 Voir la transaction](https://basescan.org/tx/{tx['hash']})"
+    content = (
+        f"🔁 **Swap détecté**\n\n"
+        f"📤 From: `{tx['from']}`\n"
+        f"📥 To: `{tx['to']}`\n"
+        f"🕒 Time: `{tx['timestamp']}`\n"
+        f"⛽ Gas used: `{tx['gas']}`\n"
+        f"[🔗 Voir la transaction](https://basescan.org/tx/{tx['hash']})"
+    )
     payload = {"content": content}
     try:
         requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=10)
